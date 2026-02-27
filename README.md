@@ -1,25 +1,39 @@
 # Mood Tracker
 
-Un prototipo rápido de seguimiento de estados de ánimo (Mood Tracker) construido con un monorepo que contiene un backend en Python con FastAPI y un frontend en Angular.
+Un prototipo rápido de seguimiento de estados de ánimo (Mood Tracker) construido con un monorepo que contiene un backend en TypeScript con NestJS y un frontend en Angular.
 
 ## Estructura del Proyecto
 
 ```
 .
-├── backend/           # API Python con FastAPI
-│   ├── main.py       # Endpoints /add y /list
-│   ├── pyproject.toml # Configuración UV
-│   ├── Makefile      # Comando make dev
-│   └── .python-version # Versión 3.14.2
+├── backend/           # API NestJS (TypeScript)
+│   ├── src/
+│   │   ├── main.ts                    # Bootstrap + CORS (puerto 3000)
+│   │   ├── app.module.ts
+│   │   └── moods/
+│   │       ├── moods.module.ts
+│   │       ├── moods.controller.ts    # POST /add, GET /list
+│   │       ├── moods.service.ts       # Lógica + almacenamiento en memoria
+│   │       └── dto/                   # Interfaces y DTOs
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── Makefile
 ├── frontend/          # Aplicación Angular
-│   ├── src/          # Código fuente
-│   └── package.json  # Dependencias npm
-└── INSTRUCCIONES_GENERALES.md # Documentación confusa
+│   ├── src/
+│   └── package.json
+└── README.md
 ```
 
 ## Backend
 
-Tecnologías: Python + FastAPI + UV
+Tecnologías: NestJS 11 + TypeScript 5.7 + Node.js v24
+
+### Instalar dependencias
+
+```bash
+cd backend
+npm install
+```
 
 ### Levantar el servidor
 
@@ -28,19 +42,22 @@ cd backend
 make dev
 ```
 
-O manualmente:
-```bash
-cd backend
-uv sync
-uv run fastapi dev main.py
-```
-
-El servidor correrá en `http://localhost:8000`
+El servidor correrá en `http://localhost:3000`
 
 ### Endpoints
 
-- `POST /add` - Agregar un nuevo mood
-- `GET /list` - Listar todos los moods ordenados
+- `POST /add` — Agregar un nuevo mood. Body: `{ "mood"?: string, "note"?: string }`
+- `GET /list` — Listar todos los moods ordenados por timestamp descendente
+
+#### Ejemplo
+
+```bash
+curl -X POST http://localhost:3000/add \
+  -H 'Content-Type: application/json' \
+  -d '{"mood": "happy", "note": "buen día"}'
+
+curl http://localhost:3000/list
+```
 
 ## Frontend
 
@@ -64,10 +81,6 @@ La aplicación correrá en `http://localhost:4200`
 
 ## Características
 
-- Backend con lista en memoria (sin base de datos)
-- Frontend con diseño "colorido" y estilos inline
+- Backend con almacenamiento en memoria (sin base de datos)
 - CORS habilitado para comunicación entre puertos
-
-## Notas
-
-Para más detalles, consultar `INSTRUCCIONES_GENERALES.md`.
+- Frontend con diseño colorido y estilos inline
