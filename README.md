@@ -1,8 +1,20 @@
 # Mood Tracker
 
-Un prototipo rápido de seguimiento de estados de ánimo (Mood Tracker) construido con un monorepo que contiene un backend en TypeScript con NestJS y un frontend en Angular.
+Un prototipo de seguimiento de estados de ánimo construido con un backend en NestJS y un frontend en Angular.
 
-## Estructura del Proyecto
+## Requisitos previos
+
+- **Node.js** v24.11.1 (especificado en `.nvmrc` de cada proyecto)
+- **npm** (incluido con Node.js)
+- **nvm** (opcional, para gestionar versiones de Node.js)
+
+Con nvm:
+```bash
+nvm install 24.11.1
+nvm use 24.11.1
+```
+
+## Estructura del proyecto
 
 ```
 .
@@ -16,71 +28,110 @@ Un prototipo rápido de seguimiento de estados de ánimo (Mood Tracker) construi
 │   │       ├── moods.service.ts       # Lógica + almacenamiento en memoria
 │   │       └── dto/                   # Interfaces y DTOs
 │   ├── package.json
-│   ├── tsconfig.json
-│   └── Makefile
+│   └── tsconfig.json
 ├── frontend/          # Aplicación Angular
 │   ├── src/
-│   └── package.json
+│   │   └── app/
+│   │       └── app.component.ts       # Componente único standalone
+│   ├── package.json
+│   └── angular.json
 └── README.md
 ```
 
-## Backend
+## Inicio rápido
 
-Tecnologías: NestJS 11 + TypeScript 5.7 + Node.js v24
+Abre dos terminales. En la primera, levanta el backend; en la segunda, el frontend.
 
-### Instalar dependencias
-
+**Terminal 1 — Backend:**
 ```bash
 cd backend
 npm install
+npm run start:dev
 ```
 
-### Levantar el servidor
-
-```bash
-cd backend
-make dev
-```
-
-El servidor correrá en `http://localhost:3000`
-
-### Endpoints
-
-- `POST /add` — Agregar un nuevo mood. Body: `{ "mood"?: string, "note"?: string }`
-- `GET /list` — Listar todos los moods ordenados por timestamp descendente
-
-#### Ejemplo
-
-```bash
-curl -X POST http://localhost:3000/add \
-  -H 'Content-Type: application/json' \
-  -d '{"mood": "happy", "note": "buen día"}'
-
-curl http://localhost:3000/list
-```
-
-## Frontend
-
-Tecnologías: Angular 21 + TypeScript 5.8 + npm
-
-### Instalar dependencias
-
+**Terminal 2 — Frontend:**
 ```bash
 cd frontend
 npm install
-```
-
-### Levantar la aplicación
-
-```bash
-cd frontend
 npm start
 ```
 
-La aplicación correrá en `http://localhost:4200`
+- Backend: `http://localhost:3000`
+- Frontend: `http://localhost:4200`
 
-## Características
+---
 
-- Backend con almacenamiento en memoria (sin base de datos)
-- CORS habilitado para comunicación entre puertos
-- Frontend con diseño colorido y estilos inline
+## Backend
+
+**Tecnologías:** NestJS 11 · TypeScript 5.7 · Node.js v24
+
+### Instalación
+
+```bash
+cd backend
+npm install
+```
+
+### Comandos
+
+| Comando | Descripción |
+|---|---|
+| `npm run start:dev` | Servidor de desarrollo con hot reload (recomendado) |
+| `npm start` | Servidor de producción |
+| `npm run build` | Compilar TypeScript a `dist/` |
+
+El servidor escucha en **`http://localhost:3000`**.
+
+### Arquitectura
+
+```
+src/
+  main.ts              # Bootstrap, habilita CORS para todos los orígenes, puerto 3000
+  app.module.ts        # Módulo raíz, importa MoodsModule
+  moods/
+    moods.module.ts
+    moods.controller.ts   # Rutas POST /add y GET /list
+    moods.service.ts      # Lógica de negocio y almacenamiento en memoria
+    dto/
+      create-mood.dto.ts        # { mood?: string, note?: string }
+      mood-entry.dto.ts         # MoodEntry y MoodEntryWithAge
+      add-mood-response.dto.ts
+      list-moods-response.dto.ts
+```
+
+### Notas
+
+- **Almacenamiento en memoria:** los datos se pierden al reiniciar el servidor (sin base de datos).
+- **CORS:** habilitado para todos los orígenes (`*`), todos los métodos y cabeceras.
+
+---
+
+## Frontend
+
+**Tecnologías:** Angular 21 · TypeScript 5.9 · Node.js v24
+
+### Instalación
+
+```bash
+cd frontend
+npm install
+```
+
+### Comandos
+
+| Comando | Descripción |
+|---|---|
+| `npm start` | Servidor de desarrollo |
+| `npm run build` | Build de producción en `dist/` |
+| `npm run watch` | Build en modo watch (desarrollo) |
+
+La aplicación estará disponible en **`http://localhost:4200`**.
+
+---
+
+## Problemas conocidos
+
+- **Mismatch de puertos en el frontend:** `app.component.ts` apunta a `http://localhost:8000` pero el backend escucha en el puerto `3000`. Para que el frontend se comunique correctamente con el backend, es necesario corregir la URL en `frontend/src/app/app.component.ts`:
+  ```typescript
+  private apiUrl = 'http://localhost:3000'; // corregir desde 8000
+  ```
