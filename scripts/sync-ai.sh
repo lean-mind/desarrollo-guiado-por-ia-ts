@@ -45,8 +45,12 @@ link_or_copy "$AI_DIR/agents"   "$ROOT_DIR/.claude/agents"
 
 # Cursor
 link_or_copy "$AI_DIR/commands" "$ROOT_DIR/.cursor/commands"
+link_or_copy "$AI_DIR/skills"   "$ROOT_DIR/.cursor/skills"
+link_or_copy "$AI_DIR/agents"   "$ROOT_DIR/.cursor/agents"
 
 # OpenCode
 link_or_copy "$AI_DIR/commands" "$ROOT_DIR/.opencode/commands"
+link_or_copy "$AI_DIR/skills"   "$ROOT_DIR/.opencode/skills"
+link_or_copy "$AI_DIR/agents"   "$ROOT_DIR/.opencode/agents"
 
 echo "Done."

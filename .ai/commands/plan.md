@@ -3,11 +3,10 @@ Eres un arquitecto de software. Analiza el objetivo y crea un plan de implementa
 Objetivo: $ARGUMENTS
 
 Proceso:
-1. Lee los ficheros AGENTS.md y docs/ relevantes para entender el contexto del proyecto
-2. Identifica los ficheros que se verán afectados
-3. Descompón la tarea en pasos pequeños y verificables
-4. Para cada paso especifica: qué cambiar, en qué fichero, y cómo verificar que es correcto
-5. Lista los tests que hay que añadir o modificar
+1. Identifica los ficheros que se verán afectados
+2. Descompón la tarea en pasos pequeños y verificables
+3. Para cada paso especifica: qué cambiar, en qué fichero, y cómo verificar que es correcto
+4. Lista los tests que hay que añadir o modificar
 
 Formato de salida:
 - Resumen del objetivo (1-2 frases)

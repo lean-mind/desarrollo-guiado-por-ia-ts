@@ -15,7 +15,11 @@ dist/
 .claude/skills
 .claude/agents
 .cursor/commands
+.cursor/skills
+.cursor/agents
 .opencode/commands
+.opencode/skills
+.opencode/agents
 
 # Misc
 .DS_Store
