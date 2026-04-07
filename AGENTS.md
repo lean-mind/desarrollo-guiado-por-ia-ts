@@ -18,6 +18,7 @@ Aplicación de seguimiento de estados de ánimo. Monorepo con backend en NestJS 
 ```
 backend/    # API NestJS (puerto 3000)
 frontend/   # Aplicación Angular (puerto 4200)
+docs/       # Reglas y convenciones globales del proyecto
 ```
 
 ## Setup
@@ -30,17 +31,6 @@ cd backend && npm install && npm run start:dev
 cd frontend && npm install && npm start
 ```
 
-## Reglas
+## Reglas globales
 
-✓ Usar interfaces TypeScript tipadas para todos los datos.
-✗ Nunca usar `any` en código TypeScript.
-
-✓ Los estilos CSS van en ficheros `.css` separados.
-✗ No usar estilos inline en templates de Angular ni en componentes.
-
-✓ Seguir el formato de commits convencionales: `feat:`, `fix:`, `chore:`, `test:`.
-
-## Referencias
-
-- Contexto del backend: `backend/AGENTS.md`
-- Contexto del frontend: `frontend/AGENTS.md`
+Ver `docs/commits.md` para convenciones de commits.
