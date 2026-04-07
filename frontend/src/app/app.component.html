@@ -1,0 +1,39 @@
+<div class="container">
+  <h1 class="title">Mood Tracker</h1>
+
+  <section class="card">
+    <h2 class="section-title">Agregar Mood</h2>
+    <input
+      #moodInput
+      type="text"
+      placeholder="¿Cómo te sientes?"
+      class="input"
+    />
+    <textarea
+      #noteInput
+      placeholder="Notas (opcional)..."
+      class="textarea"
+    ></textarea>
+    <button (click)="addMood(moodInput.value, noteInput.value)" class="btn-primary">
+      Guardar Mood
+    </button>
+    <p *ngIf="validationError" class="error">{{ validationError }}</p>
+  </section>
+
+  <section class="card">
+    <div class="list-header">
+      <h2 class="section-title">Historial</h2>
+      <button (click)="loadMoods()" class="btn-secondary">Actualizar</button>
+    </div>
+
+    <p *ngIf="moods.length === 0" class="empty-state">
+      No hay moods registrados aún.
+    </p>
+
+    <div *ngFor="let item of moods" class="mood-card">
+      <p class="mood-text"><strong>{{ item.mood }}</strong></p>
+      <p *ngIf="item.note" class="mood-note">{{ item.note }}</p>
+      <p class="mood-meta">{{ item.date_formatted }} · {{ item.day_of_week }}</p>
+    </div>
+  </section>
+</div>
