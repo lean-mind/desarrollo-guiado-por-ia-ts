@@ -54,7 +54,7 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   moods: any = [];
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) {}
 

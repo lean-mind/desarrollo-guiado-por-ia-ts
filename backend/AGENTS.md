@@ -28,7 +28,13 @@ src/
 
 ## Reglas
 
-Ver `docs/reglas.md` para las convenciones del backend.
+✓ Usar DTOs tipados en `dto/` para todo input y output de endpoints.
+✗ No aceptar `@Body() data: any` — siempre usar DTOs con class-validator.
+
+✓ La lógica de negocio va en el servicio, nunca en el controlador.
+✗ No acceder a `this.db` directamente desde el controlador.
+
+✓ Añadir tests unitarios para cada método público del servicio.
 
 ## Comandos
 
