@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+.venv/
+
+# Build
+dist/
+*.js.map
+
+# Entornos
+.env
+.env.local
+
+# Carpetas de agente generadas por sync-ai.sh (derivadas de .ai/)
+.claude/commands
+.claude/skills
+.claude/agents
+.cursor/commands
+.opencode/commands
+
+# Misc
+.DS_Store
+coverage/
