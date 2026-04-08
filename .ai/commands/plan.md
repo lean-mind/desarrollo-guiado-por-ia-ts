@@ -9,11 +9,25 @@ Proceso:
 4. Lista los tests que hay que añadir o modificar
 
 Formato de salida:
-- Resumen del objetivo (1-2 frases)
-- Ficheros afectados
-- Pasos de implementación numerados, cada uno con su criterio de verificación
-- Tests a añadir o modificar
-- Dudas o riesgos identificados
+Genera el plan como un documento checklist en `.ai/workspace/plans/<nombre-descriptivo>.md`:
 
-Guarda el plan en `.ai/workspace/plans/` con nombre descriptivo.
+---
+## Objetivo
+<resumen en 1-2 frases>
+
+## Ficheros afectados
+<lista de ficheros>
+
+## Pasos
+- [ ] <descripción del cambio — fichero — criterio de verificación>
+- [ ] <descripción del cambio — fichero — criterio de verificación>
+- [ ] ...
+
+## Tests a añadir o modificar
+<lista de tests>
+
+## Dudas o riesgos
+<si los hay>
+---
+
 Presenta el plan completo y **espera aprobación explícita antes de implementar nada**.
