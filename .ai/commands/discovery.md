@@ -23,6 +23,6 @@ Cuando consideres que tienes suficiente contexto, genera un documento de discove
 - Corner cases a cubrir
 - Criterio de éxito verificable
 
-Guárdalo en `.ai/workspace/prds/` y propón usarlo como base para `/plan`.
+Guárdalo en `.ai/workspace/plans/` y propón usarlo como base para `/plan`.
 
 Empieza con la primera pregunta ahora.
