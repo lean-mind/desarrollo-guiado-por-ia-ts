@@ -18,6 +18,11 @@ export class MoodsController {
     return this.moodsService.listMoods();
   }
 
+  @Get('stats')
+  getStats(): { total: number; by_mood: Record<string, number> } {
+    return this.moodsService.getStats();
+  }
+
   @Delete('delete/:id')
   deleteMood(@Param('id', ParseIntPipe) id: number): { status: string; id: number } {
     return this.moodsService.deleteMood(id);

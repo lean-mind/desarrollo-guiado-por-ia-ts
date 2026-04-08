@@ -58,6 +58,14 @@ export class MoodsService {
     return { status: 'added', entry };
   }
 
+  getStats(): { total: number; by_mood: Record<string, number> } {
+    const by_mood: Record<string, number> = {};
+    for (const entry of this.db) {
+      by_mood[entry.mood] = (by_mood[entry.mood] ?? 0) + 1;
+    }
+    return { total: this.db.length, by_mood };
+  }
+
   deleteMood(id: number): { status: string; id: number } {
     const index = this.db.findIndex((m) => m.id === id);
     if (index === -1) throw new NotFoundException(`Mood ${id} not found`);
