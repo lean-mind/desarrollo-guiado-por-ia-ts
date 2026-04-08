@@ -12,4 +12,10 @@ Proceso:
 3. No avances al siguiente paso sin completar el actual
 4. Si encuentras algo inesperado que no estaba en el plan, detente y explica el problema
 
-Al finalizar: resume los cambios realizados y qué tests los cubren.
+Al finalizar, genera un summary con:
+- Objetivo que se implementó
+- Cambios realizados por fichero
+- Tests añadidos o modificados
+- Decisiones tomadas que no estaban en el plan (si las hubo)
+
+Guarda el summary en `.ai/workspace/summaries/` con el mismo nombre que el plan.
