@@ -53,6 +53,28 @@ describe('MoodsService', () => {
     });
   });
 
+  describe('deleteMood', () => {
+    it('should return status "deleted" with the id', () => {
+      const added = service.addMood({ mood: 'happy' });
+
+      const result = service.deleteMood(added.entry.id);
+
+      expect(result).toEqual({ status: 'deleted', id: added.entry.id });
+    });
+
+    it('should remove the mood from the list', () => {
+      const added = service.addMood({ mood: 'happy' });
+
+      service.deleteMood(added.entry.id);
+
+      expect(service.listMoods().count).toBe(0);
+    });
+
+    it('should throw NotFoundException when id does not exist', () => {
+      expect(() => service.deleteMood(999)).toThrow();
+    });
+  });
+
   describe('listMoods', () => {
     it('should return empty list when no moods have been added', () => {
       const result = service.listMoods();

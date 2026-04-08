@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMoodDto } from './dto/create-mood.dto';
 import { MoodEntry, MoodEntryWithAge } from './dto/mood-entry.dto';
 import { AddMoodResponse } from './dto/add-mood-response.dto';
@@ -56,6 +56,13 @@ export class MoodsService {
     };
     this.db.push(entry);
     return { status: 'added', entry };
+  }
+
+  deleteMood(id: number): { status: string; id: number } {
+    const index = this.db.findIndex((m) => m.id === id);
+    if (index === -1) throw new NotFoundException(`Mood ${id} not found`);
+    this.db.splice(index, 1);
+    return { status: 'deleted', id };
   }
 
   listMoods(): ListMoodsResponse {
