@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { MoodsService } from './moods.service';
 import { CreateMoodDto } from './dto/create-mood.dto';
 import { AddMoodResponse } from './dto/add-mood-response.dto';
@@ -16,5 +16,10 @@ export class MoodsController {
   @Get('list')
   listMoods(): ListMoodsResponse {
     return this.moodsService.listMoods();
+  }
+
+  @Delete('delete/:id')
+  deleteMood(@Param('id', ParseIntPipe) id: number): { status: string; id: number } {
+    return this.moodsService.deleteMood(id);
   }
 }
