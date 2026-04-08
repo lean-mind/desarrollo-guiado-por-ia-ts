@@ -51,7 +51,11 @@ if [ -d "$AI_DIR/hooks" ]; then
     [ -f "$hook_file" ] || continue
     hook_name="$(basename "$hook_file")"
     dst="$git_hooks_dir/$hook_name"
-    ln -sf "$hook_file" "$dst"
+    if [[ "$USE_COPY" == true ]]; then
+      cp "$hook_file" "$dst"
+    else
+      ln -sf "$hook_file" "$dst"
+    fi
     chmod +x "$dst"
     echo "  hook    $hook_name"
   done
