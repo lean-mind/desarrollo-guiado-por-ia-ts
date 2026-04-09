@@ -34,9 +34,10 @@ cd frontend && npm install && npm start
 ## Agentes especializados
 
 `.ai/agents/debater.md` — analiza el problema con preguntas socráticas y genera un PRD.
-`.ai/agents/planner.md` — lee el PRD y elabora el plan de implementación como checklist.
-`.ai/agents/executor.md` — implementa el plan paso a paso con TDD, marcando items y commiteando.
-`.ai/agents/reviewer.md` — revisa la implementación contra el plan y las reglas.
+`.ai/agents/backend-architect.md` — arquitecto senior de backend: planifica y revisa cambios en el backend.
+`.ai/agents/frontend-architect.md` — arquitecto senior de frontend: planifica y revisa cambios en el frontend.
+`.ai/agents/backend-dev.md` — dev senior de backend: implementa el plan del backend con TDD.
+`.ai/agents/frontend-dev.md` — dev senior de frontend: implementa el plan del frontend con TDD.
 
 ## Skills
 
