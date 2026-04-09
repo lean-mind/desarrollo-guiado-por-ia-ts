@@ -29,14 +29,15 @@ Ejecuta: `npm test` → **PASS**
 
 ```typescript
 deleteMood(id: number): DeleteMoodResponse {
-  const index = this.db.findIndex(m => m.id === id);
-  if (index === -1) throw new NotFoundException(`Mood ${id} not found`);
-  this.db.splice(index, 1);
+  this.db = this.db.filter(m => m.id !== id);
   return { status: 'deleted', id };
 }
 ```
 
-Ejecuta: `npm test` → **PASS** (añadir test para 404 en siguiente ciclo)
+Cambios: tipar el retorno con `DeleteMoodResponse` en vez de un objeto literal.
+El comportamiento externo es idéntico — mismos inputs producen mismos outputs.
+
+Ejecuta: `npm test` → **PASS**
 
 ## Anti-patrones a evitar
 
