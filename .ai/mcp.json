@@ -1,14 +1,11 @@
 {
   "mcpServers": {
-    "filesystem": {
+    "context7": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
-      "description": "Acceso al sistema de ficheros del proyecto"
-    },
-    "sequential-thinking": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "description": "Razonamiento paso a paso para tareas complejas"
+      "args": ["-y", "@upstash/context7-mcp"],
+      "env": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      }
     }
   }
 }
