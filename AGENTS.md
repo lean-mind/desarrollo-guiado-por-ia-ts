@@ -33,8 +33,9 @@ cd frontend && npm install && npm start
 
 ## Agentes especializados
 
-`.ai/agents/planner.md` — analiza el código y elabora planes (solo lectura).
-`.ai/agents/executor.md` — implementa el plan paso a paso con TDD.
+`.ai/agents/debater.md` — analiza el problema con preguntas socráticas y genera un PRD.
+`.ai/agents/planner.md` — lee el PRD y elabora el plan de implementación como checklist.
+`.ai/agents/executor.md` — implementa el plan paso a paso con TDD, marcando items y commiteando.
 `.ai/agents/reviewer.md` — revisa la implementación contra el plan y las reglas.
 
 ## Skills
