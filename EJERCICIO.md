@@ -1,53 +1,59 @@
-# Ejercicio 1 — Contexto del proyecto
+# Ejercicio 2 — El ciclo de trabajo
 
 ## De qué va
 
-Cuando un agente llega al repo por primera vez, no sabe qué es el proyecto, cómo está estructurado ni qué reglas debe seguir. Este ejercicio aplica los conceptos del módulo 2 (gestión de contexto, reglas ejecutables): añadir los ficheros que le dan esa información al agente antes de que escriba una sola línea de código.
+Hasta ahora le habéis dado contexto al agente (ejercicio 1). Este ejercicio es sobre el **flujo** en sí: cómo llegar desde una idea vaga hasta código funcionando sin dejar que el agente improvise. Aplica los conceptos de M2.1 (anatomía del prompt) y M2.4 (ciclo de trabajo).
+
+El ciclo completo que vais a practicar:
+
+```
+/discovery → PRD → /plan → plan → /execute → summary → /review
+```
 
 ## Punto de partida
 
-Estáis en la rama `ejercicio-1`, que parte de `main` con los ficheros de contexto ya creados para la raíz y el backend NestJS.
+Estáis en la rama `ejercicio-2`, que parte de `solucion-1`. Tenéis todo el contexto del proyecto ya configurado (AGENTS.md, CLAUDE.md, reglas por scope).
 
-### Ya hecho en esta rama (ejemplos)
-
-- `AGENTS.md` — descripción del proyecto, stack y estructura global.
-- `CLAUDE.md` — puntero a `@AGENTS.md` para Claude Code.
-- `docs/commits.md` — convenciones de commits (Conventional Commits adaptados).
-- `backend/AGENTS.md` — contexto específico del backend NestJS: endpoints, arquitectura, comandos.
-- `backend/CLAUDE.md` — puntero a `@AGENTS.md` en el scope de backend.
-- `backend/docs/reglas.md` — reglas ejecutables del backend (tests, linter, convenciones de código).
-
-Leed estos ficheros antes de empezar — son la plantilla que debéis seguir.
+Este ejercicio **no trae ejemplos precocinados**: todo el trabajo es aplicar el ciclo, no añadir más estructura al repo.
 
 ## Vuestra tarea (obligatoria)
 
-Crear el contexto equivalente para el frontend Angular.
+Validar que los moods que se añaden a través del endpoint `/add` del backend no sean vacíos ni superen un límite de caracteres razonable.
+
+Haced el ciclo completo sin saltaros pasos:
+
+1. **`/discovery`** — explorar el problema con el agente. Generar un PRD en `.ai/workspace/prds/` (o equivalente en vuestro setup).
+2. **`/plan`** — a partir del PRD, un plan detallado en `.ai/workspace/plans/`. Revisadlo antes de pasar a implementar.
+3. **`/execute`** — implementar siguiendo el plan, sin desviarse.
+4. **`/review`** — revisar los cambios antes de cerrar.
 
 **Hecho cuando:**
-- [ ] Existe `frontend/AGENTS.md` con el stack (Angular), estructura de carpetas, cómo arrancar y cómo testear.
-- [ ] Existe `frontend/CLAUDE.md` que apunta a `@AGENTS.md`.
-- [ ] Existe `frontend/docs/reglas.md` con al menos 3 reglas ejecutables específicas del frontend.
-- [ ] Al preguntar al agente dentro de `frontend/` ("¿qué convenciones sigue este proyecto?"), responde de forma coherente con esas reglas.
+- [ ] Existe un PRD en `.ai/workspace/prds/` (o el directorio equivalente) con el problema descrito.
+- [ ] Existe un plan en `.ai/workspace/plans/` con los pasos concretos.
+- [ ] La validación del mood vacío está implementada al añadirse por el endpoint `/add`.
+- [ ] La validación del mood demasiado largo está implementada al añadirse por el endpoint `/add`.
+- [ ] Hay tests que cubren los casos de validación (mood vacío, mood demasiado largo, mood válido).
 
 ## Extra (si acabáis antes)
 
-Añadir una regla ejecutable al backend que el agente pueda verificar con un test. Por ejemplo: "todos los endpoints nuevos requieren al menos un test de integración con `@nestjs/testing`".
+Añadir validación equivalente en el frontend antes de enviar la petición — feedback inmediato al usuario sin necesidad de ida y vuelta al backend.
 
 **Hecho cuando:**
-- [ ] La regla está en `backend/docs/reglas.md` con un criterio verificable que el agente pueda comprobar ejecutando `npm test`.
+- [ ] El formulario del frontend impide enviar si el mood está vacío o supera el límite.
+- [ ] El aviso al usuario se muestra de forma clara.
 
 ## Pistas / preguntas mientras trabajáis
 
-- Comparad `backend/AGENTS.md` con `AGENTS.md` raíz: ¿qué información se repite? ¿qué es específico del scope?
-- ¿Qué reglas del frontend son ejecutables (el agente puede verificar si se cumplen) y cuáles son solo estilo?
-- ¿Qué le diríais al agente sobre los componentes standalone? ¿Y sobre signals vs RxJS?
-- ¿Qué pasa si el agente ve información contradictoria entre el `AGENTS.md` raíz y el del frontend?
-- ¿Qué dejarías fuera para no generar ruido?
+- ¿Qué diferencia hay entre empezar con `/plan` directamente y pasar por `/discovery` primero?
+- ¿Cuándo es útil revisar el plan antes de ejecutarlo? ¿Qué encontráis que hubieseis implementado mal sin leerlo?
+- ¿El agente hizo algo inesperado durante `/execute`? ¿Cómo lo corregisteis?
+- ¿Qué regla en `AGENTS.md` o `docs/reglas.md` os habría evitado ese desvío?
+- El objetivo no es terminar la feature — es practicar el flujo. Si el discovery tarda más de lo previsto, mejor.
 
 ## Referencia
 
-Cuando terminéis, comparad con la rama `solucion-1`:
+Cuando terminéis, comparad con la rama `solucion-2`:
 
 ```bash
-git diff ejercicio-1..solucion-1 -- frontend/
+git diff ejercicio-2..solucion-2 -- backend/
 ```
