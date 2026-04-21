@@ -1,59 +1,51 @@
-# Ejercicio 2 — El ciclo de trabajo
+# Ejercicio 3 — Comandos
 
 ## De qué va
 
-Hasta ahora le habéis dado contexto al agente (ejercicio 1). Este ejercicio es sobre el **flujo** en sí: cómo llegar desde una idea vaga hasta código funcionando sin dejar que el agente improvise. Aplica los conceptos de M2.1 (anatomía del prompt) y M2.4 (ciclo de trabajo).
-
-El ciclo completo que vais a practicar:
-
-```
-/discovery → PRD → /plan → plan → /execute → summary → /review
-```
+Los comandos personalizados convierten secuencias de trabajo repetidas en instrucciones reutilizables que el equipo comparte. Este ejercicio aplica lo aprendido en M2.5 (comandos): diseñar el comando `/execute` que el equipo usará para implementar cambios a partir de un plan previo.
 
 ## Punto de partida
 
-Estáis en la rama `ejercicio-2`, que parte de `solucion-1`. Tenéis todo el contexto del proyecto ya configurado (AGENTS.md, CLAUDE.md, reglas por scope).
+Estáis en la rama `ejercicio-3`, que parte de `solucion-2` con dos comandos ya escritos y el script de sincronización listo.
 
-Este ejercicio **no trae ejemplos precocinados**: todo el trabajo es aplicar el ciclo, no añadir más estructura al repo.
+### Ya hecho en esta rama (ejemplos)
+
+- `.ai/commands/discovery.md` — comando para explorar el problema a fondo antes de escribir código.
+- `.ai/commands/plan.md` — comando para crear un plan de implementación detallado sin ejecutar nada.
+- `scripts/sync-ai.sh` — script que enlaza `.ai/commands/` a `.claude/commands/`, `.cursor/commands/` y `.opencode/commands/`.
+- `.ai/workspace/` — directorio de trabajo para documentos de discovery, planes y resúmenes.
+
+Leed los dos comandos antes de empezar — definen el patrón: instrucción de rol + proceso + formato de salida.
 
 ## Vuestra tarea (obligatoria)
 
-Validar que los moods que se añaden a través del endpoint `/add` del backend no sean vacíos ni superen un límite de caracteres razonable.
-
-Haced el ciclo completo sin saltaros pasos:
-
-1. **`/discovery`** — explorar el problema con el agente. Generar un PRD en `.ai/workspace/prds/` (o equivalente en vuestro setup).
-2. **`/plan`** — a partir del PRD, un plan detallado en `.ai/workspace/plans/`. Revisadlo antes de pasar a implementar.
-3. **`/execute`** — implementar siguiendo el plan, sin desviarse.
-4. **`/review`** — revisar los cambios antes de cerrar.
+Escribir el comando `/execute` y sincronizarlo para que esté disponible en Claude Code.
 
 **Hecho cuando:**
-- [ ] Existe un PRD en `.ai/workspace/prds/` (o el directorio equivalente) con el problema descrito.
-- [ ] Existe un plan en `.ai/workspace/plans/` con los pasos concretos.
-- [ ] La validación del mood vacío está implementada al añadirse por el endpoint `/add`.
-- [ ] La validación del mood demasiado largo está implementada al añadirse por el endpoint `/add`.
-- [ ] Hay tests que cubren los casos de validación (mood vacío, mood demasiado largo, mood válido).
+- [ ] Existe `.ai/commands/execute.md` con: qué input espera (plan de implementación), qué outputs produce (cambios en el código + resumen) y qué restricciones tiene (p.ej. "implementa exactamente lo que indica el plan; si hay ambigüedad, pregunta antes").
+- [ ] Tras ejecutar `bash scripts/sync-ai.sh`, el comando aparece disponible en `.claude/commands/execute.md`.
+- [ ] Al invocar `/execute` con un plan en el contexto, el agente implementa los cambios sin desviarse del plan.
 
 ## Extra (si acabáis antes)
 
-Añadir validación equivalente en el frontend antes de enviar la petición — feedback inmediato al usuario sin necesidad de ida y vuelta al backend.
+1. Escribir `.ai/commands/review.md` — comando para revisar los cambios implementados y generar un resumen.
+2. Probar `/execute` contra un caso real: extraer el CSS inline del componente principal del frontend a un fichero separado.
 
 **Hecho cuando:**
-- [ ] El formulario del frontend impide enviar si el mood está vacío o supera el límite.
-- [ ] El aviso al usuario se muestra de forma clara.
+- [ ] Existe `.ai/commands/review.md` con criterios de revisión explícitos.
+- [ ] El refactor CSS se completó usando `/execute` sin intervención manual adicional.
 
 ## Pistas / preguntas mientras trabajáis
 
-- ¿Qué diferencia hay entre empezar con `/plan` directamente y pasar por `/discovery` primero?
-- ¿Cuándo es útil revisar el plan antes de ejecutarlo? ¿Qué encontráis que hubieseis implementado mal sin leerlo?
-- ¿El agente hizo algo inesperado durante `/execute`? ¿Cómo lo corregisteis?
-- ¿Qué regla en `AGENTS.md` o `docs/reglas.md` os habría evitado ese desvío?
-- El objetivo no es terminar la feature — es practicar el flujo. Si el discovery tarda más de lo previsto, mejor.
+- Comparad `discovery.md` y `plan.md`: ¿qué tienen en común en cuanto a estructura? ¿cómo limita cada uno el ámbito del agente?
+- ¿Qué instrucción añadiríais a `/execute` para que el agente no improvise más allá del plan?
+- ¿El agente usó el comando de forma distinta a lo que escribisteis? ¿Por qué crees que pasó?
+- ¿Cuándo necesitáis `/plan` antes de `/execute`? ¿Cuándo podéis ir directo a `/execute`?
 
 ## Referencia
 
-Cuando terminéis, comparad con la rama `solucion-2`:
+Cuando terminéis, comparad con la rama `solucion-3`:
 
 ```bash
-git diff ejercicio-2..solucion-2 -- backend/
+git diff ejercicio-3..solucion-3 -- .ai/commands/execute.md
 ```
