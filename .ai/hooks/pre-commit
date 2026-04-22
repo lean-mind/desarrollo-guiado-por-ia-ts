@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+ok()   { echo "  ✓ $1"; }
+fail() { echo "  ✗ $1"; exit 1; }
+
+echo "pre-commit"
+
+cd "$ROOT_DIR/backend"
+printf "  typecheck (backend)...  "
+npm run typecheck --silent && ok "typecheck" || fail "typecheck"
+
+printf "  lint (backend)...       "
+npm run lint --silent && ok "lint" || fail "lint"
+
+printf "  tests (backend)...      "
+npm test -- --passWithNoTests --silent && ok "tests" || fail "tests"
+
+cd "$ROOT_DIR/frontend"
+printf "  typecheck (frontend)... "
+npm run typecheck --silent && ok "typecheck" || fail "typecheck"
+
+printf "  lint (frontend)...      "
+npm run lint --silent && ok "lint" || fail "lint"
+
+echo ""
+echo "✓ All checks passed"

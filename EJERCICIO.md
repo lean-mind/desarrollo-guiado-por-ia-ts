@@ -1,51 +1,55 @@
-# Ejercicio 3 — Comandos
+# Ejercicio 4 — Feedback rápido
 
 ## De qué va
 
-Los comandos personalizados convierten secuencias de trabajo repetidas en instrucciones reutilizables que el equipo comparte. Este ejercicio aplica lo aprendido en M2.5 (comandos): diseñar el comando `/execute` que el equipo usará para implementar cambios a partir de un plan previo.
+Hasta ahora el agente podía escribir código sin que nada lo frenara automáticamente. Este ejercicio aplica los conceptos de M3.1 (entorno de feedback rápido): montar el tooling que convierte cada commit en una prueba de calidad. El linter, el tipado estricto y el hook pre-commit ya están configurados — tu trabajo es experimentar cómo cambia la dinámica del agente cuando existe ese feedback.
 
 ## Punto de partida
 
-Estáis en la rama `ejercicio-3`, que parte de `solucion-2` con dos comandos ya escritos y el script de sincronización listo.
+Estáis en la rama `ejercicio-4`, que parte de `solucion-3`. Todo el tooling de feedback está precocinado y activo desde el primer commit.
 
 ### Ya hecho en esta rama (ejemplos)
 
-- `.ai/commands/discovery.md` — comando para explorar el problema a fondo antes de escribir código.
-- `.ai/commands/plan.md` — comando para crear un plan de implementación detallado sin ejecutar nada.
-- `scripts/sync-ai.sh` — script que enlaza `.ai/commands/` a `.claude/commands/`, `.cursor/commands/` y `.opencode/commands/`.
-- `.ai/workspace/` — directorio de trabajo para documentos de discovery, planes y resúmenes.
+- `backend/eslint.config.mjs` — reglas ESLint para el backend NestJS.
+- `frontend/eslint.config.mjs` — reglas ESLint para el frontend Angular.
+- `frontend/tsconfig.json` — TypeScript en modo estricto (`strict: true`).
+- `.ai/hooks/pre-commit` — hook que ejecuta typecheck + lint + tests antes de cada commit.
+- `scripts/sync-ai.sh` — actualizado para enlazar el hook a `.git/hooks/pre-commit`.
 
-Leed los dos comandos antes de empezar — definen el patrón: instrucción de rol + proceso + formato de salida.
+Antes de empezar, ejecutad `bash scripts/sync-ai.sh` para activar el hook localmente.
 
 ## Vuestra tarea (obligatoria)
 
-Escribir el comando `/execute` y sincronizarlo para que esté disponible en Claude Code.
+Usar el ciclo `/plan → /execute` para añadir un campo `createdAt` a los moods: se asigna automáticamente al crearlo, se devuelve en las respuestas y hay tests que lo cubren.
+
+Observad cómo el hook pre-commit interactúa con el agente: `/execute` commitea tras cada check del plan, y el hook se dispara en cada uno de ellos.
 
 **Hecho cuando:**
-- [ ] Existe `.ai/commands/execute.md` con: qué input espera (plan de implementación), qué outputs produce (cambios en el código + resumen) y qué restricciones tiene (p.ej. "implementa exactamente lo que indica el plan; si hay ambigüedad, pregunta antes").
-- [ ] Tras ejecutar `bash scripts/sync-ai.sh`, el comando aparece disponible en `.claude/commands/execute.md`.
-- [ ] Al invocar `/execute` con un plan en el contexto, el agente implementa los cambios sin desviarse del plan.
+- [ ] Existe un plan en `.ai/workspace/plans/` con varios checks atómicos.
+- [ ] Al ejecutar `/execute`, el agente commitea al completar cada check.
+- [ ] El historial de commits muestra evidencia de que el hook se ejecutó (correcciones de linter o tipos antes de avanzar al siguiente check).
+- [ ] La feature `createdAt` funciona end-to-end con tests verdes y `npm test` pasa sin errores.
 
 ## Extra (si acabáis antes)
 
-1. Escribir `.ai/commands/review.md` — comando para revisar los cambios implementados y generar un resumen.
-2. Probar `/execute` contra un caso real: extraer el CSS inline del componente principal del frontend a un fichero separado.
+Añadir una regla nueva al linter o al hook (p.ej., que falle si hay un `console.log` en el código de producción) y volver a ejecutar el ciclo para ver cómo cambia la dinámica del agente.
 
 **Hecho cuando:**
-- [ ] Existe `.ai/commands/review.md` con criterios de revisión explícitos.
-- [ ] El refactor CSS se completó usando `/execute` sin intervención manual adicional.
+- [ ] La nueva regla está configurada en `eslint.config.mjs` o en `.ai/hooks/pre-commit`.
+- [ ] Al ejecutar `/execute` con la nueva regla activa, el agente se adapta sin intervención manual.
 
 ## Pistas / preguntas mientras trabajáis
 
-- Comparad `discovery.md` y `plan.md`: ¿qué tienen en común en cuanto a estructura? ¿cómo limita cada uno el ámbito del agente?
-- ¿Qué instrucción añadiríais a `/execute` para que el agente no improvise más allá del plan?
-- ¿El agente usó el comando de forma distinta a lo que escribisteis? ¿Por qué crees que pasó?
-- ¿Cuándo necesitáis `/plan` antes de `/execute`? ¿Cuándo podéis ir directo a `/execute`?
+- ¿En qué commits falló el hook? ¿Fue por linter, por tipos o por tests?
+- ¿El agente corrigió el error solo o necesitó que le dijérais qué había fallado?
+- ¿Habría cometido ese error sin el hook? ¿Cómo lo sabrías?
+- ¿Qué reglas añadiríais al linter y cuáles dejaríais fuera para no ralentizar el commit?
+- Si el hook tarda más de 10 segundos, ¿qué haríais?
 
 ## Referencia
 
-Cuando terminéis, comparad con la rama `solucion-3`:
+Cuando terminéis, comparad con la rama `solucion-4`:
 
 ```bash
-git diff ejercicio-3..solucion-3 -- .ai/commands/execute.md
+git diff ejercicio-4..solucion-4 -- backend/ frontend/
 ```

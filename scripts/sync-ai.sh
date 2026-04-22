@@ -43,4 +43,18 @@ link_or_copy "$AI_DIR/commands" "$ROOT_DIR/.opencode/commands"
 link_or_copy "$AI_DIR/skills"   "$ROOT_DIR/.opencode/skills"
 link_or_copy "$AI_DIR/agents"   "$ROOT_DIR/.opencode/agents"
 
+# Git hooks (compatible con submódulos: .git puede ser un gitfile)
+if [ -d "$AI_DIR/hooks" ]; then
+  git_hooks_dir="$(cd "$ROOT_DIR" && git rev-parse --git-dir)/hooks"
+  mkdir -p "$git_hooks_dir"
+  for hook_file in "$AI_DIR/hooks"/*; do
+    [ -f "$hook_file" ] || continue
+    hook_name="$(basename "$hook_file")"
+    dst="$git_hooks_dir/$hook_name"
+    ln -sf "$hook_file" "$dst"
+    chmod +x "$dst"
+    echo "  hook    $hook_name"
+  done
+fi
+
 echo "Done."
