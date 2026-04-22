@@ -17,9 +17,11 @@ dist/
 .cursor/commands
 .cursor/skills
 .cursor/agents
+.cursor/mcp.json
 .opencode/commands
 .opencode/skills
 .opencode/agents
+.mcp.json
 
 # Misc
 .DS_Store

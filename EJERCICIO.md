@@ -1,55 +1,62 @@
-# Ejercicio 4 — Feedback rápido
+# Ejercicio 5 — Skills y MCPs
 
 ## De qué va
 
-Hasta ahora el agente podía escribir código sin que nada lo frenara automáticamente. Este ejercicio aplica los conceptos de M3.1 (entorno de feedback rápido): montar el tooling que convierte cada commit en una prueba de calidad. El linter, el tipado estricto y el hook pre-commit ya están configurados — tu trabajo es experimentar cómo cambia la dinámica del agente cuando existe ese feedback.
+Los comandos encapsulan flujos de trabajo; las skills encapsulan conocimiento de proceso. Este ejercicio aplica los conceptos de M3.2 (MCP) y M3.3 (skills): enseñar al agente a trabajar con TDD creando la skill que describe el ciclo Red-Green-Refactor.
 
 ## Punto de partida
 
-Estáis en la rama `ejercicio-4`, que parte de `solucion-3`. Todo el tooling de feedback está precocinado y activo desde el primer commit.
+Estáis en la rama `ejercicio-5`, que parte de `solucion-4`. El MCP ya está configurado y tenéis una skill de ejemplo completa (Conventional Commits) para usar como plantilla.
 
 ### Ya hecho en esta rama (ejemplos)
 
-- `backend/eslint.config.mjs` — reglas ESLint para el backend NestJS.
-- `frontend/eslint.config.mjs` — reglas ESLint para el frontend Angular.
-- `frontend/tsconfig.json` — TypeScript en modo estricto (`strict: true`).
-- `.ai/hooks/pre-commit` — hook que ejecuta typecheck + lint + tests antes de cada commit.
-- `scripts/sync-ai.sh` — actualizado para enlazar el hook a `.git/hooks/pre-commit`.
+- `.ai/skills/commit/SKILL.md` — skill de Conventional Commits: define cuándo activarla, el formato esperado y ejemplos. Es el patrón que debéis seguir.
+- `.ai/mcp.json` — configuración de servidores MCP.
+- `scripts/sync-ai.sh` — actualizado para sincronizar skills y MCP a `.claude/`, `.cursor/` y `.opencode/`.
+- `.env.example` — variables de entorno necesarias para los MCP.
 
-Antes de empezar, ejecutad `bash scripts/sync-ai.sh` para activar el hook localmente.
+Leed `SKILL.md` antes de empezar — define la estructura: cuándo activarse, proceso y formato de salida.
+
+## Referencia rápida: TDD (Red-Green-Refactor)
+
+TDD (Test-Driven Development) es un ciclo de tres pasos que se repite por cada unidad de comportamiento:
+
+1. **Red** — escribe un test que describe el comportamiento esperado. Ejecútalo: debe fallar porque el código aún no existe.
+2. **Green** — escribe el código mínimo necesario para que el test pase. Sin más.
+3. **Refactor** — mejora el código sin cambiar su comportamiento. Los tests deben seguir pasando.
+
+La regla clave: nunca escribas código de producción sin un test rojo previo.
 
 ## Vuestra tarea (obligatoria)
 
-Usar el ciclo `/plan → /execute` para añadir un campo `createdAt` a los moods: se asigna automáticamente al crearlo, se devuelve en las respuestas y hay tests que lo cubren.
-
-Observad cómo el hook pre-commit interactúa con el agente: `/execute` commitea tras cada check del plan, y el hook se dispara en cada uno de ellos.
+Escribir la skill de TDD para que el agente siga el ciclo Red-Green-Refactor al implementar.
 
 **Hecho cuando:**
-- [ ] Existe un plan en `.ai/workspace/plans/` con varios checks atómicos.
-- [ ] Al ejecutar `/execute`, el agente commitea al completar cada check.
-- [ ] El historial de commits muestra evidencia de que el hook se ejecutó (correcciones de linter o tipos antes de avanzar al siguiente check).
-- [ ] La feature `createdAt` funciona end-to-end con tests verdes y `npm test` pasa sin errores.
+- [ ] Existe `.ai/skills/tdd/SKILL.md` con instrucciones claras: cuándo activar la skill y cómo aplicar el ciclo.
+- [ ] Existe `.ai/skills/tdd/references/red-green-refactor.md` con el ciclo explicado en detalle para consultarlo.
+- [ ] `bash scripts/sync-ai.sh` sincroniza la skill a `.claude/skills/`.
+- [ ] Al pedirle al agente implementar algo con TDD, sigue el ciclo sin que se lo recordéis en cada paso.
 
 ## Extra (si acabáis antes)
 
-Añadir una regla nueva al linter o al hook (p.ej., que falle si hay un `console.log` en el código de producción) y volver a ejecutar el ciclo para ver cómo cambia la dinámica del agente.
+Implementar el endpoint `DELETE /delete/:id` aplicando la skill TDD recién escrita: primero el test rojo, luego la implementación mínima.
 
 **Hecho cuando:**
-- [ ] La nueva regla está configurada en `eslint.config.mjs` o en `.ai/hooks/pre-commit`.
-- [ ] Al ejecutar `/execute` con la nueva regla activa, el agente se adapta sin intervención manual.
+- [ ] El test del endpoint DELETE falla antes de implementar la lógica.
+- [ ] El endpoint funciona y `npm test` pasa sin errores.
 
 ## Pistas / preguntas mientras trabajáis
 
-- ¿En qué commits falló el hook? ¿Fue por linter, por tipos o por tests?
-- ¿El agente corrigió el error solo o necesitó que le dijérais qué había fallado?
-- ¿Habría cometido ese error sin el hook? ¿Cómo lo sabrías?
-- ¿Qué reglas añadiríais al linter y cuáles dejaríais fuera para no ralentizar el commit?
-- Si el hook tarda más de 10 segundos, ¿qué haríais?
+- Comparad vuestra skill TDD con la skill de commit precocinada: ¿qué nivel de detalle es suficiente? ¿cuánto es demasiado?
+- ¿Cuándo debe "activarse" la skill? ¿La ponéis siempre activa o solo cuando el agente va a implementar?
+- ¿El agente siguió el ciclo Red-Green-Refactor sin recordatorios, o tuvisteis que corregirlo?
+- ¿Qué parte del ciclo tiende a saltarse el agente? ¿Por qué crees que es eso?
+- ¿Qué MCP añadisteis y por qué? ¿Compensó el coste de contexto adicional?
 
 ## Referencia
 
-Cuando terminéis, comparad con la rama `solucion-4`:
+Cuando terminéis, comparad con la rama `solucion-5`:
 
 ```bash
-git diff ejercicio-4..solucion-4 -- backend/ frontend/
+git diff ejercicio-5..solucion-5 -- .ai/skills/tdd/
 ```

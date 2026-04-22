@@ -43,6 +43,10 @@ link_or_copy "$AI_DIR/commands" "$ROOT_DIR/.opencode/commands"
 link_or_copy "$AI_DIR/skills"   "$ROOT_DIR/.opencode/skills"
 link_or_copy "$AI_DIR/agents"   "$ROOT_DIR/.opencode/agents"
 
+# MCP — configuración canónica en .ai/mcp.json
+link_or_copy "$AI_DIR/mcp.json" "$ROOT_DIR/.mcp.json"          # Claude Code (raíz)
+link_or_copy "$AI_DIR/mcp.json" "$ROOT_DIR/.cursor/mcp.json"   # Cursor
+
 # Git hooks (compatible con submódulos: .git puede ser un gitfile)
 if [ -d "$AI_DIR/hooks" ]; then
   git_hooks_dir="$(cd "$ROOT_DIR" && git rev-parse --git-dir)/hooks"
