@@ -31,6 +31,11 @@ cd backend && npm install && npm run start:dev
 cd frontend && npm install && npm start
 ```
 
+## Skills
+
+`.ai/skills/tdd/` — ciclo Red-Green-Refactor para implementar con tests primero.
+`.ai/skills/commit/` — convenciones de Conventional Commits.
+
 ## Reglas globales
 
 Ver `docs/commits.md` para convenciones de commits.
