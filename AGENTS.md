@@ -39,6 +39,10 @@ Los agentes se definen primero como manifiestos agnósticos en `.ai/agents/*.yam
 `.ai/agents/planner.yaml` — lee el PRD y elabora el plan de implementación como checklist.
 `.ai/agents/executor.yaml` — implementa el plan paso a paso con TDD, marcando items y commiteando.
 `.ai/agents/reviewer.yaml` — revisa la implementación contra el plan y las reglas.
+`.ai/agents/backend-architect.yaml` — arquitecto backend: planifica y revisa cambios bajo `backend/`.
+`.ai/agents/frontend-architect.yaml` — arquitecto frontend: planifica y revisa cambios bajo `frontend/`.
+`.ai/agents/backend-dev.yaml` — dev backend: implementa el plan backend con TDD.
+`.ai/agents/frontend-dev.yaml` — dev frontend: implementa el plan frontend con TDD.
 
 ## Skills
 

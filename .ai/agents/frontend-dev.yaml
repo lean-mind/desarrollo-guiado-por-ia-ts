@@ -1,0 +1,15 @@
+id: frontend-dev
+description: Desarrollador senior de frontend especializado en Angular y TypeScript. Implementa el plan frontend siguiendo TDD.
+prompt: prompts/frontend-dev.md
+model_profile: inherit
+permission_profile: implementer
+capabilities:
+  - inspect_code
+  - edit_code
+  - run_tests
+  - update_plan
+  - write_summary
+  - commit_changes
+skills:
+  - tdd
+  - commit

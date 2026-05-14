@@ -1,0 +1,11 @@
+id: backend-architect
+description: Arquitecto senior de backend especializado en NestJS y TypeScript. Disena planes y revisa codigo backend con mirada critica.
+prompt: prompts/backend-architect.md
+model_profile: inherit
+permission_profile: architect
+capabilities:
+  - inspect_code
+  - write_plan
+  - inspect_git_diff
+  - write_review
+  - run_tests

@@ -37,6 +37,23 @@ PROFILE_CONFIG = {
         "opencode_permission": {"edit": "ask", "bash": "ask", "webfetch": "deny"},
         "codex_sandbox": "workspace-write",
     },
+    "architect": {
+        "readonly": False,
+        "claude_tools": ["Read", "Write", "Bash", "Glob", "Grep"],
+        "opencode_tools": {"write": True, "edit": False, "bash": True},
+        "opencode_permission": {
+            "edit": "deny",
+            "webfetch": "deny",
+            "bash": {
+                "*": "ask",
+                "git diff*": "allow",
+                "git status*": "allow",
+                "pytest*": "allow",
+                "npm test*": "allow",
+            },
+        },
+        "codex_sandbox": "workspace-write",
+    },
     "readonly-reviewer": {
         "readonly": True,
         "claude_tools": ["Read", "Bash", "Glob", "Grep"],

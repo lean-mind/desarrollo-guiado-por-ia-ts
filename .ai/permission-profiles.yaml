@@ -7,5 +7,8 @@ discovery-writer:
 implementer:
   description: Puede leer, editar, ejecutar tests y crear commits siguiendo un plan aprobado.
 
+architect:
+  description: Puede leer codigo, ejecutar inspecciones seguras y escribir planes o revisiones, pero no editar codigo de producto.
+
 readonly-reviewer:
   description: Puede leer el proyecto y ejecutar comandos seguros de inspeccion, pero no modificar ficheros.
