@@ -1,0 +1,8 @@
+id: debater
+description: Analiza un problema en profundidad mediante preguntas socraticas antes de proponer soluciones. Usame al inicio de una tarea para entender el problema antes de planificar.
+prompt: prompts/debater.md
+model_profile: inherit
+permission_profile: discovery-writer
+capabilities:
+  - inspect_code
+  - write_prd

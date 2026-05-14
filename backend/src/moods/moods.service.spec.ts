@@ -75,6 +75,34 @@ describe('MoodsService', () => {
     });
   });
 
+  describe('getStats', () => {
+    it('should return zero counts when no moods added', () => {
+      const result = service.getStats();
+
+      expect(result.total).toBe(0);
+      expect(result.by_mood).toEqual({});
+    });
+
+    it('should count moods by type', () => {
+      service.addMood({ mood: 'happy' });
+      service.addMood({ mood: 'happy' });
+      service.addMood({ mood: 'sad' });
+
+      const result = service.getStats();
+
+      expect(result.total).toBe(3);
+      expect(result.by_mood).toEqual({ happy: 2, sad: 1 });
+    });
+
+    it('should count unknown moods when mood not provided', () => {
+      service.addMood({});
+
+      const result = service.getStats();
+
+      expect(result.by_mood).toEqual({ unknown: 1 });
+    });
+  });
+
   describe('listMoods', () => {
     it('should return empty list when no moods have been added', () => {
       const result = service.listMoods();

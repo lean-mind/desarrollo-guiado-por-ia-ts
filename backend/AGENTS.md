@@ -8,6 +8,7 @@ API REST construida con NestJS. Almacenamiento en memoria (datos se pierden al r
 |--------|------|------|-----------|
 | POST | `/add` | `{ mood?: string, note?: string }` | `{ status: string, entry: MoodEntry }` |
 | GET | `/list` | — | `{ moods: MoodEntryWithAge[], count: number }` |
+| GET | `/stats` | — | `{ total: number, by_mood: Record<string, number> }` |
 | DELETE | `/delete/:id` | — | `{ status: string, id: number }` |
 
 ## Arquitectura

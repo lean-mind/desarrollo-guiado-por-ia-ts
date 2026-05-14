@@ -1,0 +1,15 @@
+id: executor
+description: Implementa el plan paso a paso siguiendo TDD, marcando cada item del checklist y commiteando. Usame para escribir codigo cuando ya existe un plan aprobado.
+prompt: prompts/executor.md
+model_profile: inherit
+permission_profile: implementer
+capabilities:
+  - inspect_code
+  - edit_code
+  - run_tests
+  - update_plan
+  - write_summary
+  - commit_changes
+skills:
+  - tdd
+  - commit
