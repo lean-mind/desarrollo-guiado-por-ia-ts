@@ -1,0 +1,343 @@
+#!/usr/bin/env python3
+"""Generate tool-specific agent definitions from .ai/agents/*.yaml."""
+
+from __future__ import annotations
+
+import argparse
+import difflib
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+AI_DIR = ROOT / ".ai"
+AGENTS_DIR = AI_DIR / "agents"
+GENERATED_DIR = AI_DIR / "generated"
+PLATFORMS = ("claude", "codex", "opencode", "cursor")
+
+PROFILE_CONFIG = {
+    "planner": {
+        "readonly": False,
+        "claude_tools": ["Read", "Write", "Glob", "Grep"],
+        "opencode_tools": {"write": True, "edit": False, "bash": False},
+        "opencode_permission": {"edit": "deny", "bash": "deny", "webfetch": "deny"},
+        "codex_sandbox": "workspace-write",
+    },
+    "discovery-writer": {
+        "readonly": False,
+        "claude_tools": ["Read", "Write", "Glob", "Grep"],
+        "opencode_tools": {"write": True, "edit": False, "bash": False},
+        "opencode_permission": {"edit": "deny", "bash": "deny", "webfetch": "deny"},
+        "codex_sandbox": "workspace-write",
+    },
+    "implementer": {
+        "readonly": False,
+        "claude_tools": ["Read", "Edit", "Write", "Bash"],
+        "opencode_tools": {"write": True, "edit": True, "bash": True},
+        "opencode_permission": {"edit": "ask", "bash": "ask", "webfetch": "deny"},
+        "codex_sandbox": "workspace-write",
+    },
+    "readonly-reviewer": {
+        "readonly": True,
+        "claude_tools": ["Read", "Bash", "Glob", "Grep"],
+        "opencode_tools": {"write": False, "edit": False, "bash": True},
+        "opencode_permission": {
+            "edit": "deny",
+            "webfetch": "deny",
+            "bash": {
+                "*": "ask",
+                "git diff*": "allow",
+                "git status*": "allow",
+                "pytest*": "allow",
+                "npm test*": "allow",
+            },
+        },
+        "codex_sandbox": "read-only",
+    },
+}
+
+
+class AgentError(Exception):
+    pass
+
+
+def parse_simple_yaml(path: Path) -> dict[str, object]:
+    data: dict[str, object] = {}
+    current_list: str | None = None
+
+    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+        line = raw_line.rstrip()
+        stripped = line.strip()
+
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        if stripped.startswith("- "):
+            if current_list is None:
+                raise AgentError(f"{path}:{line_number}: list item without list key")
+            value = stripped[2:].strip()
+            current_value = data.setdefault(current_list, [])
+            if not isinstance(current_value, list):
+                raise AgentError(f"{path}:{line_number}: key {current_list} is not a list")
+            current_value.append(value)
+            continue
+
+        if ":" not in stripped:
+            raise AgentError(f"{path}:{line_number}: expected key: value")
+
+        key, value = stripped.split(":", 1)
+        key = key.strip()
+        value = value.strip()
+        current_list = None
+
+        if not value:
+            data[key] = []
+            current_list = key
+        elif value == "[]":
+            data[key] = []
+        else:
+            data[key] = value.strip('"')
+
+    return data
+
+
+def profile_names() -> set[str]:
+    profile_file = AI_DIR / "permission-profiles.yaml"
+    if not profile_file.exists():
+        raise AgentError("Missing .ai/permission-profiles.yaml")
+
+    names: set[str] = set()
+    for raw_line in profile_file.read_text(encoding="utf-8").splitlines():
+        if not raw_line.strip() or raw_line.startswith(" ") or raw_line.startswith("#"):
+            continue
+        if raw_line.rstrip().endswith(":"):
+            names.add(raw_line.rstrip()[:-1])
+    return names
+
+
+def load_agents(agent_id: str | None) -> list[dict[str, object]]:
+    if not AGENTS_DIR.exists():
+        raise AgentError("Missing .ai/agents directory")
+
+    paths = sorted(path for path in AGENTS_DIR.glob("*.yaml") if path.name != "permission-profiles.yaml")
+    agents = [parse_simple_yaml(path) for path in paths]
+
+    if agent_id:
+        agents = [agent for agent in agents if agent.get("id") == agent_id]
+        if not agents:
+            raise AgentError(f"Unknown agent: {agent_id}")
+
+    return agents
+
+
+def validate_agent(agent: dict[str, object], known_profiles: set[str]) -> None:
+    for field in ("id", "description", "prompt", "permission_profile"):
+        if not agent.get(field):
+            raise AgentError(f"Agent manifest is missing required field: {field}")
+
+    agent_id = str(agent["id"])
+    profile = str(agent["permission_profile"])
+    capabilities = as_list(agent.get("capabilities"))
+
+    if profile not in known_profiles:
+        raise AgentError(f"Agent {agent_id} references unknown permission_profile: {profile}")
+    if profile not in PROFILE_CONFIG:
+        raise AgentError(f"Agent {agent_id} has no generator mapping for profile: {profile}")
+
+    prompt_path = AGENTS_DIR / str(agent["prompt"])
+    if not prompt_path.exists():
+        raise AgentError(f"Agent {agent_id} references missing prompt: {prompt_path}")
+
+    for skill in as_list(agent.get("skills")):
+        if not (AI_DIR / "skills" / skill / "SKILL.md").exists():
+            raise AgentError(f"Agent {agent_id} references missing skill: {skill}")
+
+    if PROFILE_CONFIG[profile]["readonly"] and any(cap in capabilities for cap in ("edit_code", "write_artifact", "commit_changes")):
+        raise AgentError(f"Agent {agent_id} is readonly but declares write capabilities")
+
+
+def as_list(value: object | None) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return [str(value)]
+
+
+def prompt_for(agent: dict[str, object], platform: str) -> str:
+    prompt = (AGENTS_DIR / str(agent["prompt"])).read_text(encoding="utf-8").rstrip()
+    skills = as_list(agent.get("skills"))
+    if platform in {"opencode", "cursor"} and skills:
+        skill_text = ", ".join(skills)
+        return f"Skills requeridas: {skill_text}. Aplica estas skills durante la tarea.\n\n{prompt}"
+    return prompt
+
+
+def yaml_list(key: str, values: list[str]) -> str:
+    if not values:
+        return ""
+    lines = [f"{key}:"]
+    lines.extend(f"  - {value}" for value in values)
+    return "\n".join(lines)
+
+
+def toml_string(value: str) -> str:
+    return '"' + value.replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+
+def render_claude(agent: dict[str, object]) -> tuple[Path, str]:
+    profile = PROFILE_CONFIG[str(agent["permission_profile"])]
+    parts = [
+        "---",
+        f"name: {agent['id']}",
+        f"description: {agent['description']}",
+        yaml_list("tools", profile["claude_tools"]),
+    ]
+    skills = as_list(agent.get("skills"))
+    if skills:
+        parts.append(yaml_list("skills", skills))
+    parts.extend(["---", "", prompt_for(agent, "claude"), ""])
+    return Path("agents") / f"{agent['id']}.md", "\n".join(part for part in parts if part != "")
+
+
+def render_cursor(agent: dict[str, object]) -> tuple[Path, str]:
+    profile = PROFILE_CONFIG[str(agent["permission_profile"])]
+    content = f"""---
+name: {agent['id']}
+description: {agent['description']}
+model: {agent.get('model_profile', 'inherit')}
+readonly: {str(profile['readonly']).lower()}
+---
+
+{prompt_for(agent, 'cursor')}
+"""
+    return Path("agents") / f"{agent['id']}.md", content
+
+
+def render_opencode(agent: dict[str, object]) -> tuple[Path, str]:
+    profile = PROFILE_CONFIG[str(agent["permission_profile"])]
+    lines = ["---", f"description: {agent['description']}", "mode: subagent"]
+    if agent.get("model"):
+        lines.append(f"model: {agent['model']}")
+    lines.append("tools:")
+    for name, enabled in profile["opencode_tools"].items():
+        lines.append(f"  {name}: {str(enabled).lower()}")
+    lines.append("permission:")
+    for name, rule in profile["opencode_permission"].items():
+        if isinstance(rule, dict):
+            lines.append(f"  {name}:")
+            for pattern, value in rule.items():
+                lines.append(f"    {toml_string(pattern)}: {value}")
+        else:
+            lines.append(f"  {name}: {rule}")
+    lines.extend(["---", "", prompt_for(agent, "opencode"), ""])
+    return Path("agents") / f"{agent['id']}.md", "\n".join(lines)
+
+
+def render_codex(agent: dict[str, object]) -> tuple[Path, str]:
+    profile = PROFILE_CONFIG[str(agent["permission_profile"])]
+    lines = [
+        f"name = {toml_string(str(agent['id']))}",
+        f"description = {toml_string(str(agent['description']))}",
+        f"sandbox_mode = {toml_string(str(profile['codex_sandbox']))}",
+    ]
+    if agent.get("model"):
+        lines.append(f"model = {toml_string(str(agent['model']))}")
+    lines.extend(["developer_instructions = \"\"\"", prompt_for(agent, "codex"), "\"\"\""])
+    for skill in as_list(agent.get("skills")):
+        lines.extend(["", "[[skills.config]]", f"path = {toml_string(f'.ai/skills/{skill}/SKILL.md')}", "enabled = true"])
+    return Path("agents") / f"{agent['id']}.toml", "\n".join(lines) + "\n"
+
+
+RENDERERS = {
+    "claude": render_claude,
+    "codex": render_codex,
+    "opencode": render_opencode,
+    "cursor": render_cursor,
+}
+
+
+def generated_outputs(platforms: list[str], agent_id: str | None) -> dict[Path, str]:
+    known_profiles = profile_names()
+    agents = load_agents(agent_id)
+    outputs: dict[Path, str] = {}
+
+    for agent in agents:
+        validate_agent(agent, known_profiles)
+        for platform in platforms:
+            relative_path, content = RENDERERS[platform](agent)
+            outputs[GENERATED_DIR / platform / relative_path] = content
+
+    return outputs
+
+
+def print_dry_run(outputs: dict[Path, str], root: Path) -> None:
+    for path, content in outputs.items():
+        print(f"Would write {path.relative_to(root)}")
+        print("--- preview ---")
+        print(content.rstrip())
+        print("--- end preview ---")
+
+
+def write_outputs(outputs: dict[Path, str]) -> None:
+    for path, content in outputs.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+        print(f"generated {path.relative_to(ROOT)}")
+
+
+def check_outputs(outputs: dict[Path, str]) -> int:
+    failed = False
+    for path, expected in outputs.items():
+        if not path.exists():
+            print(f"missing {path.relative_to(ROOT)}", file=sys.stderr)
+            failed = True
+            continue
+        actual = path.read_text(encoding="utf-8")
+        if actual != expected:
+            print(f"outdated {path.relative_to(ROOT)}", file=sys.stderr)
+            diff = difflib.unified_diff(
+                actual.splitlines(),
+                expected.splitlines(),
+                fromfile=str(path.relative_to(ROOT)),
+                tofile="expected",
+                lineterm="",
+            )
+            print("\n".join(diff), file=sys.stderr)
+            failed = True
+    return 1 if failed else 0
+
+
+def selected_platforms(value: str) -> list[str]:
+    if value == "all":
+        return list(PLATFORMS)
+    if value not in PLATFORMS:
+        raise AgentError(f"Unknown platform {value}. Expected one of: {', '.join((*PLATFORMS, 'all'))}")
+    return [value]
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Generate tool-specific agents from .ai/agents/*.yaml")
+    parser.add_argument("--platform", "--plaform", default="all", help="claude, codex, opencode, cursor or all")
+    parser.add_argument("--agent", help="Generate only one agent id")
+    parser.add_argument("--dry-run", action="store_true", help="Print generated files without writing them")
+    parser.add_argument("--check", action="store_true", help="Fail if generated files are missing or outdated")
+    args = parser.parse_args()
+
+    try:
+        platforms = selected_platforms(args.platform)
+        outputs = generated_outputs(platforms, args.agent)
+        if args.dry_run:
+            print_dry_run(outputs, ROOT)
+            return 0
+        if args.check:
+            return check_outputs(outputs)
+        write_outputs(outputs)
+        return 0
+    except AgentError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

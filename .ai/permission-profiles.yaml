@@ -1,0 +1,11 @@
+planner:
+  description: Puede leer el proyecto y escribir planes en .ai/workspace/plans, pero no editar codigo ni ejecutar comandos.
+
+discovery-writer:
+  description: Puede leer el proyecto y escribir PRDs en .ai/workspace/prds, pero no editar codigo ni ejecutar comandos.
+
+implementer:
+  description: Puede leer, editar, ejecutar tests y crear commits siguiendo un plan aprobado.
+
+readonly-reviewer:
+  description: Puede leer el proyecto y ejecutar comandos seguros de inspeccion, pero no modificar ficheros.

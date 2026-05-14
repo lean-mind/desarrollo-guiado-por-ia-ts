@@ -1,0 +1,8 @@
+id: planner
+description: Lee un PRD de .ai/workspace/prds/ y elabora un plan de implementacion en checklist. Usame cuando necesites disenar una solucion antes de escribir codigo.
+prompt: prompts/planner.md
+model_profile: inherit
+permission_profile: planner
+capabilities:
+  - inspect_code
+  - write_plan

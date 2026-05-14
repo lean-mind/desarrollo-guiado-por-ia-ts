@@ -1,0 +1,9 @@
+id: reviewer
+description: Revisa el codigo implementado comparando con el plan y las reglas del proyecto. Usame despues de ejecutar para validar la implementacion.
+prompt: prompts/reviewer.md
+model_profile: inherit
+permission_profile: readonly-reviewer
+capabilities:
+  - inspect_code
+  - run_tests
+  - inspect_git_diff

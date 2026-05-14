@@ -21,6 +21,7 @@ dist/
 .opencode/commands
 .opencode/skills
 .opencode/agents
+.codex/agents
 .mcp.json
 
 # Misc

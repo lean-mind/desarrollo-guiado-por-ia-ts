@@ -33,10 +33,12 @@ cd frontend && npm install && npm start
 
 ## Agentes especializados
 
-`.ai/agents/debater.md` — analiza el problema con preguntas socráticas y genera un PRD.
-`.ai/agents/planner.md` — lee el PRD y elabora el plan de implementación como checklist.
-`.ai/agents/executor.md` — implementa el plan paso a paso con TDD, marcando items y commiteando.
-`.ai/agents/reviewer.md` — revisa la implementación contra el plan y las reglas.
+Los agentes se definen primero como manifiestos agnósticos en `.ai/agents/*.yaml` y prompts compartidos en `.ai/agents/prompts/`. Después `scripts/generate-agents` genera los adaptadores de Claude, Codex, OpenCode y Cursor en `.ai/generated/`.
+
+`.ai/agents/debater.yaml` — analiza el problema con preguntas socráticas y genera un PRD.
+`.ai/agents/planner.yaml` — lee el PRD y elabora el plan de implementación como checklist.
+`.ai/agents/executor.yaml` — implementa el plan paso a paso con TDD, marcando items y commiteando.
+`.ai/agents/reviewer.yaml` — revisa la implementación contra el plan y las reglas.
 
 ## Skills
 
