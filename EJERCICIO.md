@@ -4,17 +4,17 @@
 
 Hasta ahora le habéis dado contexto al agente (ejercicio 1). Este ejercicio es sobre el **flujo** en sí: cómo llegar desde una idea vaga hasta código funcionando sin dejar que el agente improvise. Aplica los conceptos de M2.1 (anatomía del prompt) y M2.4 (ciclo de trabajo).
 
-El ciclo completo que vais a practicar:
+El ciclo completo que vais a practicar, como fases de trabajo:
 
 ```
-/discovery → PRD → /plan → plan → /execute → summary → /review
+Discovery → PRD → Plan → Implementación → Resumen → Revisión
 ```
 
 ## Punto de partida
 
 Estáis en la rama `ejercicio-2`, que parte de `solucion-1`. Tenéis todo el contexto del proyecto ya configurado (AGENTS.md, CLAUDE.md, reglas por scope).
 
-Este ejercicio **no trae ejemplos precocinados**: todo el trabajo es aplicar el ciclo, no añadir más estructura al repo.
+Este ejercicio **no trae ejemplos precocinados**: todo el trabajo es aplicar el ciclo, no añadir más estructura al repo. No tenéis que crear ni usar comandos personalizados; eso llega en el ejercicio 3. Aquí cada fase se guía escribiendo el prompt correspondiente al agente.
 
 ## Vuestra tarea (obligatoria)
 
@@ -22,10 +22,10 @@ Validar que los moods que se añaden a través del endpoint `/add` del backend n
 
 Haced el ciclo completo sin saltaros pasos:
 
-1. **`/discovery`** — explorar el problema con el agente. Generar un PRD en `.ai/workspace/prds/` (o equivalente en vuestro setup).
-2. **`/plan`** — a partir del PRD, un plan detallado en `.ai/workspace/plans/`. Revisadlo antes de pasar a implementar.
-3. **`/execute`** — implementar siguiendo el plan, sin desviarse.
-4. **`/review`** — revisar los cambios antes de cerrar.
+1. **Discovery** — explorar el problema con el agente. Generar un PRD en `.ai/workspace/prds/` (o equivalente en vuestro setup).
+2. **Plan** — a partir del PRD, generar un plan detallado en `.ai/workspace/plans/`. Revisadlo antes de pasar a implementar.
+3. **Implementación** — pedir al agente que implemente siguiendo el plan, sin desviarse.
+4. **Revisión** — pedir al agente que revise los cambios antes de cerrar.
 
 **Hecho cuando:**
 - [ ] Existe un PRD en `.ai/workspace/prds/` (o el directorio equivalente) con el problema descrito.
@@ -44,9 +44,9 @@ Añadir validación equivalente en el frontend antes de enviar la petición — 
 
 ## Pistas / preguntas mientras trabajáis
 
-- ¿Qué diferencia hay entre empezar con `/plan` directamente y pasar por `/discovery` primero?
+- ¿Qué diferencia hay entre empezar planificando directamente y pasar por discovery primero?
 - ¿Cuándo es útil revisar el plan antes de ejecutarlo? ¿Qué encontráis que hubieseis implementado mal sin leerlo?
-- ¿El agente hizo algo inesperado durante `/execute`? ¿Cómo lo corregisteis?
+- ¿El agente hizo algo inesperado durante la implementación? ¿Cómo lo corregisteis?
 - ¿Qué regla en `AGENTS.md` o `docs/reglas.md` os habría evitado ese desvío?
 - El objetivo no es terminar la feature — es practicar el flujo. Si el discovery tarda más de lo previsto, mejor.
 
